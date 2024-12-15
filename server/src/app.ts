@@ -1,11 +1,15 @@
-import express, { Request, Response, Application } from 'express';
+import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { dbConnection } from './Config/dbConnect';
+import userRoute from "./routes/userRoute"
 dotenv.config();
 
 const app: Application = express();
 const localhostURL = process.env.LOCAL_HOST as string
 const port = process.env.PORT;
+
+dbConnection()
 
 const corsOptions = {
     origin: [localhostURL],
@@ -19,7 +23,7 @@ app.use(express.static("public"));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-app.use('/')
+app.use('/', userRoute)
 
 app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
