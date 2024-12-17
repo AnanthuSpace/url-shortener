@@ -11,10 +11,12 @@ export interface IUser {
 export interface IUrl {
     shortUrl: string;
     longUrl: string;
+    clicks:number;
     createdAt: Date;
 }
 
 export interface IUserData {
+    userId: string;
     email: string;
     password: string;
 }

@@ -7,7 +7,7 @@ const userAxiosInstance = axios.create({
 
 userAxiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = sessionStorage.getItem("userAccessToken")
+        const accessToken = sessionStorage.getItem("accessToken")
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -26,16 +26,16 @@ userAxiosInstance.interceptors.response.use(
         const originalRequest = error.config;
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const refreshToken = sessionStorage.getItem("userRefreshToken");
+            const refreshToken = sessionStorage.getItem("refreshToken");
             try {
                 const response = await axios.post(`${localhostURL}/auth/refresh-token`, { refreshToken });
                 const newAccessToken = response.data.accessToken;
-                sessionStorage.setItem("userAccessToken", newAccessToken);
+                sessionStorage.setItem("accessToken", newAccessToken);
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                 return axios(originalRequest);
             } catch (refreshError) {
-                sessionStorage.removeItem("userAccessToken");
-                sessionStorage.removeItem("userRefreshToken");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("refreshToken");
                 return Promise.reject(refreshError);
             }
         }

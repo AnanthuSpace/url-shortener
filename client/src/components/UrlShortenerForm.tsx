@@ -1,7 +1,21 @@
 import { Link } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 
-const UrlShortenerForm: React.FC = () => {
+interface UrlShortenerFormProps {
+  handleUrlSubmit: (url: string) => void; 
+}
+
+const UrlShortenerForm: React.FC<UrlShortenerFormProps> = ({ handleUrlSubmit }) => {
+  const [url, setUrl] = useState<string>("");
+
+  const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); 
+    if (url.trim()) {
+      handleUrlSubmit(url); 
+      setUrl("");
+    }
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-4">
       <div className="relative">
@@ -9,10 +23,15 @@ const UrlShortenerForm: React.FC = () => {
           <Link className="h-5 w-5" />
         </div>
         <input
-          className="w-full pl-10 pr-24 py-3 bg-background/50 border border-muted rounded-full text-white"
+          value={url} 
+          onChange={(e) => setUrl(e.target.value)} 
+          className="w-full pl-10 pr-24 py-3 bg-background/50 border border-muted rounded-full text-black"
           placeholder="Enter the link here"
         />
-        <button className="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full">
+        <button
+          className="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full"
+          onClick={onSubmit}
+        >
           Shorten Now!
         </button>
       </div>

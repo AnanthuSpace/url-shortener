@@ -1,8 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
+import { useGlobalContext } from "../hooks/useGlobalContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+const localhostURL = import.meta.env.VITE_LOCAL_HOST;
 
 export default function OtpVerification() {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const { email } = useGlobalContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -15,26 +23,35 @@ export default function OtpVerification() {
 
     setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
 
-    // Focus next input
-    if (element.nextSibling && element.value !== '') {
+    if (element.nextSibling && element.value !== "") {
       (element.nextSibling as HTMLInputElement).focus();
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      // Focus previous input on backspace
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       if (inputRefs.current[index - 1]) {
         inputRefs.current[index - 1]?.focus();
       }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const otpString = otp.join('');
-    console.log('OTP Submitted:', otpString);
-    // Add your OTP verification logic here
+    const otpString = otp.join("");
+    const response = await axios.post(`${localhostURL}/otp-verification`, {
+      otp: otpString,
+      email: email,
+    });
+    if (response.status === 200) {
+      await sessionStorage.setItem("accessToken", response.data.accessToken);
+      await localStorage.setItem("refreshToken", response.data.refreshToken);
+      toast.success("Successfully verified");
+      navigate("/home");
+    }
   };
 
   return (
@@ -59,7 +76,7 @@ export default function OtpVerification() {
                 onChange={(e) => handleChange(e.target, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 maxLength={1}
-                className="w-12 h-12 text-center text-2xl bg-background/50 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-12 h-12 text-center text-2xl bg-background/50 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
               />
             ))}
           </div>
@@ -73,13 +90,10 @@ export default function OtpVerification() {
           </div>
         </form>
         <p className="text-center text-sm text-muted-foreground">
-          Didn't receive the code?{' '}
-          <button className="text-blue-500 hover:underline">
-            Resend
-          </button>
+          Didn't receive the code?{" "}
+          <button className="text-blue-500 hover:underline">Resend</button>
         </p>
       </div>
     </div>
   );
 }
-

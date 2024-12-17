@@ -2,9 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { toast } from "sonner";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const localhostURL = import.meta.env.VITE_LOCAL_HOST;
 
   const initialValues = {
     email: "",
@@ -20,9 +23,18 @@ const Login: React.FC = () => {
       .required("Password is required"),
   });
 
-  const handleSubmit = (values: typeof initialValues) => {
-    // Handle login logic here
-    console.log("Login attempt", values);
+  const handleSubmit = async (values: typeof initialValues) => {
+    const response = await axios.post(`${localhostURL}/login`, {
+      email: values.email,
+      password: values.password,
+    });
+    if (response.status === 200) {
+      sessionStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      localStorage.setItem("userId", response.data.userData.userId);
+      toast.success("Login successfully");
+      navigate("/home");
+    }
   };
 
   return (
@@ -44,7 +56,6 @@ const Login: React.FC = () => {
           {({ errors, touched }) => (
             <Form className="mt-8 space-y-6">
               <div className="space-y-4">
-                {/* Email Field */}
                 <div>
                   <Field
                     id="email"
@@ -52,7 +63,9 @@ const Login: React.FC = () => {
                     type="email"
                     placeholder="Email address"
                     className={`w-full px-3 py-2 bg-background/50 border ${
-                      errors.email && touched.email ? "border-red-500" : "border-muted"
+                      errors.email && touched.email
+                        ? "border-red-500"
+                        : "border-muted"
                     } rounded-full text-black`}
                   />
                   {errors.email && touched.email && (
@@ -60,7 +73,6 @@ const Login: React.FC = () => {
                   )}
                 </div>
 
-                {/* Password Field */}
                 <div>
                   <Field
                     id="password"
@@ -68,16 +80,19 @@ const Login: React.FC = () => {
                     type="password"
                     placeholder="Password"
                     className={`w-full px-3 py-2 bg-background/50 border ${
-                      errors.password && touched.password ? "border-red-500" : "border-muted"
+                      errors.password && touched.password
+                        ? "border-red-500"
+                        : "border-muted"
                     } rounded-full text-black`}
                   />
                   {errors.password && touched.password && (
-                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div>
                 <button
                   type="submit"

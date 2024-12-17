@@ -1,5 +1,26 @@
-import { model, Schema, Types } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IUser } from "../Interfaces/common.interface";
+
+const UrlSchema = new Schema({
+    shortUrl: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    longUrl: {
+        type: String,
+        required: true,
+    },
+    clicks: {
+        type: Number,
+        required: true,
+        default: 0 
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
 
 const UserSchema = new Schema<IUser>({
     userId: {
@@ -16,10 +37,7 @@ const UserSchema = new Schema<IUser>({
         type: String,
         required: true,
     },
-    urls: [{
-        type: Types.ObjectId,
-        ref: "Url" 
-    }],
+    urls: [UrlSchema],
 });
 
 const UserModel = model<IUser>("User", UserSchema);
