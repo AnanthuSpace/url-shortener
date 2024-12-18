@@ -57,8 +57,8 @@ export class UserController {
             console.log(email)
             const serviceResponse = await this._userService.login(email, password)
             res.status(HTTP_statusCode.OK).json(serviceResponse)
-        } catch (error) {
-            if (error == "Invalid email or user not found") {
+        } catch (error: any) {
+            if (error.message == "userNotFound") {
                 res.status(HTTP_statusCode.BadRequest).json({ message: "Invalid email or user not found" })
             } else {
                 res.status(HTTP_statusCode.InternalServerError).json({ message: "Internal Server Error" })

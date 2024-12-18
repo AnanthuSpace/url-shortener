@@ -85,7 +85,7 @@ export class UserService implements IUserService {
             const user = await this._userRepository.findUser(email);
 
             if (!user) {
-                throw new Error("Invalid email or user not found");
+                throw new Error("userNotFound");
             }
 
             const bcryptPass = await bcrypt.compare(password, user.password);

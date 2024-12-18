@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { dbConnection } from './Config/dbConnect';
 import userRoute from "./routes/userRoute"
+import errorHandler from './Config/errorHandler';
 dotenv.config();
 
 const app: Application = express();
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', userRoute)
+
+app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
