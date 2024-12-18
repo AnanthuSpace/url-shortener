@@ -60,6 +60,8 @@ export class UserController {
         } catch (error) {
             if (error == "Invalid email or user not found") {
                 res.status(HTTP_statusCode.BadRequest).json({ message: "Invalid email or user not found" })
+            } else {
+                res.status(HTTP_statusCode.InternalServerError).json({ message: "Internal Server Error" })
             }
         }
     }

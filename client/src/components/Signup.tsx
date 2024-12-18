@@ -45,8 +45,13 @@ const Signup: React.FC = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
-      console.error("Signup error:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred.");
+        console.error("Signup error:", error.response?.data?.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+        console.error("Unexpected error:", error);
+      }
     }
   };
 

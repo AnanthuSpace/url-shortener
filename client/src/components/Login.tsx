@@ -24,18 +24,29 @@ const Login: React.FC = () => {
   });
 
   const handleSubmit = async (values: typeof initialValues) => {
-    const response = await axios.post(`${localhostURL}/login`, {
-      email: values.email,
-      password: values.password,
-    });
-    if (response.status === 200) {
-      sessionStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
-      localStorage.setItem("userId", response.data.userData.userId);
-      toast.success("Login successfully");
-      navigate("/home");
-    } else {
-      toast.error(response.data.message)
+    try {
+      const response = await axios.post(`${localhostURL}/login`, {
+        email: values.email,
+        password: values.password,
+      });
+
+      if (response.status === 200) {
+        sessionStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        localStorage.setItem("userId", response.data.userData.userId);
+        toast.success("Login successfully");
+        navigate("/home");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "An error occurred.");
+        console.error("Login error:", error.response?.data?.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+        console.error("Unexpected error:", error);
+      }
     }
   };
 
