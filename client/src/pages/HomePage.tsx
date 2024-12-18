@@ -40,7 +40,6 @@ const HomePage: React.FC = () => {
         const transformedUrl: ShortenedUrl = {
           shortLink: response.data.data.shortUrl,
           originalLink: response.data.data.longUrl,
-          clicks: response.data.data.clicks,
           createdAt: response.data.data.createdAt,
         };
         setUrls((prevUrls) => [transformedUrl, ...prevUrls]);
