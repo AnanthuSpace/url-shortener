@@ -7,12 +7,13 @@ dotenv.config();
 
 const app: Application = express();
 const localhostURL = process.env.LOCAL_HOST as string
+const LIVE_URL = process.env.LIVE_URL as string
 const port = process.env.PORT;
 
 dbConnection()
 
 const corsOptions = {
-    origin: [localhostURL],
+    origin: [localhostURL, LIVE_URL],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],

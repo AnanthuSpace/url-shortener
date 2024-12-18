@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const localhostURL = import.meta.env.VITE_LOCAL_HOST;
+const localhostURL = import.meta.env.LIVE_URL;
 
 export default function OtpVerification() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const localhostURL = import.meta.env.VITE_LOCAL_HOST;
+  const localhostURL = import.meta.env.LIVE_URL;
 
   const initialValues = {
     email: "",
