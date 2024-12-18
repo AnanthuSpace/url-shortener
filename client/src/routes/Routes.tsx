@@ -6,15 +6,16 @@ import NotFound from "../components/NotFound";
 import HomePage from "../pages/HomePage";
 import OtpVerification from "../components/OtpVerification";
 import UserProtector from "../components/protector/UserProtector";
+import LoginProtector from "../components/protector/LoginProtector";
 
 const AppRoutes: React.FC = () => {
   return (
     <Router>
       <Routes>
         <Route path="/home" element={<UserProtector><HomePage /></UserProtector>}/>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/otp" element={<OtpVerification />} />
-        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<LoginProtector><Signup /></LoginProtector>} />
+        <Route path="/otp" element={<LoginProtector><OtpVerification /></LoginProtector>} />
+        <Route path="/" element={<LoginProtector><Login /></LoginProtector>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

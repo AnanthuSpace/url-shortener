@@ -121,10 +121,27 @@ export class UserService implements IUserService {
         }
     }
 
-    redirectUrl =  async(shortUrl: string, userId: string): Promise<any> => {
+    redirectUrl = async (shortUrl: string, userId: string): Promise<any> => {
         try {
             const mainUrl = await this._userRepository.findUrl(shortUrl, userId)
             return mainUrl
+        } catch (error: any) {
+            throw new Error(error.message || "An error occurred during add urls");
+        }
+    }
+
+    editUrl = async (userId: string, shortUrl: string, longUrl: string): Promise<any> => {
+        try {
+            const editerRes = await this._userRepository.editUrl(userId, shortUrl, longUrl)
+            return editerRes
+        } catch (error: any) {
+            throw new Error(error.message || "An error occurred during add urls");
+        }
+    }
+    deleteUrl = async (userId: string, shortUrl: string): Promise<any> => {
+        try {
+            const result = await this._userRepository.deleteUrl(userId, shortUrl)
+            return result
         } catch (error: any) {
             throw new Error(error.message || "An error occurred during add urls");
         }

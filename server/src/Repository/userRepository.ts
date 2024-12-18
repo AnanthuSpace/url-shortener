@@ -69,17 +69,43 @@ export class UserRepository implements IUserRepository {
         }
     };
 
-    findUrl = async(shortUrl: string, userId: string) => {
+    findUrl = async (shortUrl: string, userId: string) => {
         const result = await this._userModel.aggregate([
-            {$match: {userId:userId}},
-            {$unwind:"$urls"},
-            {$match: {"urls.shortUrl": shortUrl}},
-            {$project: {"urls.longUrl": 1}}
+            { $match: { userId: userId } },
+            { $unwind: "$urls" },
+            { $match: { "urls.shortUrl": shortUrl } },
+            { $project: { "urls.longUrl": 1 } }
         ])
         if (result.length > 0) {
             const originalUrl = result[0].urls.longUrl;
             return originalUrl;
         } else {
+            throw new Error("Short URL not found");
+        }
+    }
+
+    editUrl = async (userId: string, shortUrl: string, longUrl: string): Promise<any> => {
+        try {
+
+            const result = await this._userModel.updateOne(
+                { userId, "urls.shortUrl": shortUrl },
+                { $set: { "urls.$.longUrl": longUrl } }
+            );
+            return result
+        } catch (error) {
+            throw new Error("Short URL not found");
+        }
+    }
+
+    deleteUrl = async (userId: string, shortUrl: string): Promise<any> => {
+        try {
+            const res = await this._userModel.updateOne(
+                { userId },
+                { $pull: { urls: { shortUrl } } }
+            )
+
+            return res.modifiedCount > 0;
+        } catch (error) {
             throw new Error("Short URL not found");
         }
     }

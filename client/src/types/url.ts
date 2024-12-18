@@ -1,8 +1,12 @@
 export interface ShortenedUrl {
     shortLink: string
     originalLink: string
-    clicks: number
     createdAt: string
   }
   
+  export interface fetchUrl {
+    shortUrl: string,
+    longUrl: string,
+    createdAt: string
+  }
   

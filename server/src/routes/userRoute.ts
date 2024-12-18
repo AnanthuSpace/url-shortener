@@ -16,5 +16,7 @@ router.post("/login", userController.login)
 router.get("/get-urls", verifyToken, userController.getUrls);
 router.post("/add-url", verifyToken, userController.addUrl)
 router.get("/redirectUrl", verifyToken, userController.redirectUrl)
+router.put("/edit-url", verifyToken, userController.editUrl)
+router.delete("/delete-url", verifyToken, userController.deleteUrl)
 
 export default router;

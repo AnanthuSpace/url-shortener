@@ -77,7 +77,7 @@ export class UserController {
             const userId = req.id as string
             const { url } = req.body
             const serviceResponse = await this._userService.addUrl(userId, url)
-            res.status(HTTP_statusCode.OK).json(serviceResponse)
+            res.status(HTTP_statusCode.OK).json({ data: serviceResponse, message: "URL deleted successfully" })
         } catch (error) {
             res.status(HTTP_statusCode.InternalServerError).json({ message: 'Internal server error' });
         }
@@ -93,5 +93,38 @@ export class UserController {
             res.status(HTTP_statusCode.InternalServerError).json({ message: 'Internal server error' });
         }
     }
+
+    editUrl = async (req: CustomRequest, res: Response) => {
+        try {
+            const userId = req.id as string;
+            const { shortUrl, longUrl } = req.body
+            const serviceResponse = await this._userService.editUrl(userId, shortUrl, longUrl)
+            if (serviceResponse) {
+                res.status(HTTP_statusCode.OK).json({ message: "URL updated successfully" });
+            } else {
+                res.status(HTTP_statusCode.NotFound).json({ message: "URL not found" });
+            }
+        } catch (error) {
+            res.status(HTTP_statusCode.InternalServerError).json({ message: 'Internal server error' });
+        }
+    }
+
+    deleteUrl = async (req: CustomRequest, res: Response) => {
+        try {
+            const userId = req.id as string;
+            const { shortUrl } = req.body;
+
+            const serviceResponse = await this._userService.deleteUrl(userId, shortUrl);
+
+            if (serviceResponse) {
+                res.status(HTTP_statusCode.OK).json({ message: "URL deleted successfully" });
+            } else {
+                res.status(HTTP_statusCode.NotFound).json({ message: "URL not found" });
+            }
+        } catch (error) {
+            res.status(HTTP_statusCode.InternalServerError).json({ message: "Internal server error" });
+        }
+    };
+
 
 }

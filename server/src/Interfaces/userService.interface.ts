@@ -7,4 +7,6 @@ export interface IUserService {
     getUrls(userId: string): Promise<any>
     addUrl(userId: string, longUrl: string): Promise<any>
     redirectUrl(shortUrl: string, userId: string): Promise<any>
+    editUrl(userId: string, shortUrl: string, longUrl: string): Promise<any>
+    deleteUrl(userId: string, shortUrl: string): Promise<any>
 }
