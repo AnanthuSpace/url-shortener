@@ -1,5 +1,5 @@
 import axios from "axios";
-const localhostURL = import.meta.env.LIVE_URL
+const localhostURL = import.meta.env.VITE_LIVE_URL
 
 const userAxiosInstance = axios.create({
     baseURL: localhostURL

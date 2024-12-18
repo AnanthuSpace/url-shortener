@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
-const localhostURL = import.meta.env.LIVE_URL;
+const localhostURL = import.meta.env.VITE_LIVE_URL;
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();   

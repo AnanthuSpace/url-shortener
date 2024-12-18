@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
   const [urls, setUrls] = useState<ShortenedUrl[]>([]);
   const navigate = useNavigate();
 
-  const localhostURL = import.meta.env.LIVE_URL;
+  const localhostURL = import.meta.env.VITE_LIVE_URL;
 
   const fetchUrl = async () => {
     try {

@@ -3,7 +3,7 @@ import { ShortenedUrl } from "../types/url";
 import { Edit, Trash } from "lucide-react";
 import userAxiosInstance from "../interceptors/userInterceptors";
 
-const localhostURL = import.meta.env.LIVE_URL;
+const localhostURL = import.meta.env.VITE_LIVE_URL;
 
 interface LinksTableProps {
   urls: ShortenedUrl[];
