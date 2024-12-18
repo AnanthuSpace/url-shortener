@@ -21,9 +21,9 @@ export class UserController {
             res.status(HTTP_statusCode.OK).send("OTP sended to mail");
         } catch (error: any) {
             console.log(error)
-            if (error.message === "Email already exists") {
+            if (error.message === "UserExist") {
                 res.status(HTTP_statusCode.Conflict).json({ message: "Email already exists" });
-            } else if (error.message === "Email not send") {
+            } else if (error.message === "OTP not sent") {
                 res.status(HTTP_statusCode.InternalServerError).json({ message: "Email not send" });
             } else {
                 res.status(HTTP_statusCode.InternalServerError).json({ message: "Something wrong please try again later" });

@@ -26,7 +26,7 @@ export class UserService implements IUserService {
             const alreadyExists = await this._userRepository.findUser(userData.email);
 
             if (alreadyExists) {
-                return "UserExist";
+                throw new Error("UserExist")
             }
 
             const OTP: string = Math.floor(100000 + Math.random() * 900000).toString();
@@ -36,7 +36,7 @@ export class UserService implements IUserService {
                 this.storeOtp(userData.email, OTP, userData);
                 return OTP;
             } else {
-                return "OTP not sent";
+                throw new Error( "OTP not sent")
             }
         } catch (error) {
             throw error;

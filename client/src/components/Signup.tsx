@@ -42,7 +42,7 @@ const Signup: React.FC = () => {
         toast.success(response.data);
         navigate("/otp");
       } else {
-        toast.error(response.data);
+        toast.error(response.data.message);
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");

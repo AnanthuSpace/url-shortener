@@ -34,6 +34,8 @@ const Login: React.FC = () => {
       localStorage.setItem("userId", response.data.userData.userId);
       toast.success("Login successfully");
       navigate("/home");
+    } else {
+      toast.error(response.data.message)
     }
   };
 
