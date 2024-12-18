@@ -16,6 +16,7 @@ export class UserController {
     registration = async (req: Request, res: Response) => {
         try {
             const userData = req.body;
+            console.log(userData.email)
             await this._userService.registerUserService(userData);
             res.status(HTTP_statusCode.OK).send("OTP sended to mail");
         } catch (error: any) {
@@ -53,6 +54,7 @@ export class UserController {
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body
+            console.log(email)
             const serviceResponse = await this._userService.login(email, password)
             res.status(HTTP_statusCode.OK).json(serviceResponse)
         } catch (error) {
