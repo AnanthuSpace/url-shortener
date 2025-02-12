@@ -12,6 +12,8 @@ const router = Router()
 
 router.post("/login", userController.login)
 router.post("/signup", userController.registration)
+router.post("/google-login", userController.googleLogin)
+router.post("/google-signup", userController.googleRegistration)
 router.post("/otp-verification", userController.otpVerification)
 router.get("/get-urls", verifyToken, userController.getUrls);
 router.post("/add-url", verifyToken, userController.addUrl)

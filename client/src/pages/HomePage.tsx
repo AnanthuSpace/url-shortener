@@ -11,11 +11,12 @@ const HomePage: React.FC = () => {
   const [urls, setUrls] = useState<ShortenedUrl[]>([]);
   const navigate = useNavigate();
 
-  const localhostURL = import.meta.env.VITE_LIVE_URL;
+  const localhostURL = import.meta.env.VITE_LOCAL_HOST;
 
   const fetchUrl = async () => {
     try {
       const response = await userAxiosInstance.get(`${localhostURL}/get-urls`);
+      console.log(response.data)
       if (response.status === 200) {
         const transformedUrls = response.data.map((url: fetchUrl) => ({
           shortLink: url.shortUrl,
@@ -29,12 +30,14 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleUrlSubmit = async (url: string) => {
+  const handleUrlSubmit = async (url: string, alias?: string, topic?: string) => {
     try {
       const response = await userAxiosInstance.post(`${localhostURL}/add-url`, {
         url: url,
+        alias: alias || "", 
+        topic: topic || "", 
       });
-
+  
       if (response.status === 200) {
         toast.success(response.data.message);
         const transformedUrl: ShortenedUrl = {
@@ -46,8 +49,10 @@ const HomePage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error submitting URL:", error);
+      toast.error("Error submitting URL");
     }
   };
+  
 
   const handleDeleteUrl = async (shortLink: string) => {
     try {

@@ -5,6 +5,7 @@ import { IUserService } from "../Interfaces/userService.interface"
 import { IUrl, IUserData } from "../Interfaces/common.interface";
 import { sendMail } from "../Config/nodeMailer";
 import { generateAccessToken, generateRefreshToken } from "../Config/jwtConfig";
+import { verifyGoogleToken } from "../Config/googleAuth";
 
 export class UserService implements IUserService {
     private _userRepository: IUserRepository;
@@ -36,10 +37,47 @@ export class UserService implements IUserService {
                 this.storeOtp(userData.email, OTP, userData);
                 return OTP;
             } else {
-                throw new Error( "OTP not sent")
+                throw new Error("OTP not sent")
             }
         } catch (error) {
             throw error;
+        }
+    }
+
+    googleLogin = async (token: string): Promise<any> => {
+        try {
+            const userInfo = await verifyGoogleToken(token)
+            if (userInfo?.email_verified === true) {
+                const email = userInfo.email as string
+                const existedEmail = await this._userRepository.findUser(email)
+                if (!existedEmail) {
+                    return "NotExisted"
+                } else {
+                    const accessToken = generateAccessToken(existedEmail.userId);
+                    const refreshToken = generateRefreshToken(existedEmail.userId);
+                    return { message: "Login successfully", accessToken, refreshToken, userData: existedEmail };
+                }
+            }
+        } catch (error: any) {
+            return { success: false, message: error.message || "Internal server error" };
+        }
+    }
+
+    googleRegistration = async (token: string): Promise<any> => {
+        const userInfo = await verifyGoogleToken(token)
+        console.log(userInfo)
+        if (userInfo?.email_verified === true) {
+            const email = userInfo.email as string
+            const existedEmail = await this._userRepository.findUser(email)
+            if (existedEmail) {
+                return "UserExist"
+            } else {
+                const userId = v4()
+                const result = await this._userRepository.registerThroghGoogle(userId, email)
+                const accessToken = generateAccessToken(result.userId)
+                const refreshToken = generateRefreshToken(result.userId)
+                return { result, accessToken, refreshToken }
+            }
         }
     }
 
@@ -112,9 +150,10 @@ export class UserService implements IUserService {
         }
     }
 
-    addUrl = async (userId: string, longUrl: string): Promise<any> => {
+    addUrl = async (userId: string, longUrl: string, alias: string, topic: string): Promise<any> => {
         try {
-            const data = await this._userRepository.addUrl(userId, longUrl)
+            console.log(userId, alias, topic)
+            const data = await this._userRepository.addUrl(userId, longUrl, alias, topic)
             return data
         } catch (error: any) {
             throw new Error(error.message || "An error occurred during add urls");

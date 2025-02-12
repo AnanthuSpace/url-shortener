@@ -5,11 +5,12 @@ import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "sonner";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import { GoogleLogin } from "@react-oauth/google";
 
-const localhostURL = import.meta.env.VITE_LIVE_URL;
+const localhostURL = import.meta.env.VITE_LOCAL_HOST;
 
 const Signup: React.FC = () => {
-  const navigate = useNavigate();   
+  const navigate = useNavigate();
   const { setEmail } = useGlobalContext();
 
   const initialValues = {
@@ -47,18 +48,39 @@ const Signup: React.FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data?.message || "An error occurred.");
-        console.error("Signup error:", error.response?.data?.message);
       } else {
         toast.error("An unexpected error occurred. Please try again.");
-        console.error("Unexpected error:", error);
       }
     }
   };
 
-  const inputClassNames = (hasError: boolean) =>
-    `w-full px-3 py-2 bg-background/50 border ${
-      hasError ? "border-red-500" : "border-muted"
-    } rounded-full text-black`;
+  const handleGoogleSignup = async (response: any) => {
+    try {
+      const token = response.credential;
+      if (!token) {
+        toast.error("Google signup failed. Please try again.");
+        return;
+      }
+
+      
+      const res = await axios.post(`${localhostURL}/google-signup`, { token });
+      if (res.status === 200) {
+        sessionStorage.setItem("accessToken", res.data.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.data.refreshToken);
+        localStorage.setItem("userId", res.data.data.result.userId);
+        toast.success("Signup successful");
+        navigate("/home");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error: any) {
+      console.error(
+        "Google Signup Error:",
+        error
+      );
+      toast.error(error.response.data.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#020817] text-white flex items-center justify-center p-6">
@@ -71,6 +93,7 @@ const Signup: React.FC = () => {
             Start shortening your links today
           </p>
         </div>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -79,34 +102,34 @@ const Signup: React.FC = () => {
           {({ errors, touched }) => (
             <Form className="mt-8 space-y-6">
               <div className="space-y-4">
-                {/* Email Field */}
                 <div>
                   <Field
                     id="email"
                     name="email"
                     type="email"
                     placeholder="Email address"
-                    className={inputClassNames(
-                      !!(errors.email && touched.email)
-                    )}
-                    aria-label="Email address"
+                    className={`w-full px-3 py-2 bg-background/50 border ${
+                      errors.email && touched.email
+                        ? "border-red-500"
+                        : "border-muted"
+                    } rounded-full text-black`}
                   />
                   {errors.email && touched.email && (
                     <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                   )}
                 </div>
 
-                {/* Password Field */}
                 <div>
                   <Field
                     id="password"
                     name="password"
                     type="password"
                     placeholder="Password"
-                    className={inputClassNames(
-                      !!(errors.password && touched.password)
-                    )}
-                    aria-label="Password"
+                    className={`w-full px-3 py-2 bg-background/50 border ${
+                      errors.password && touched.password
+                        ? "border-red-500"
+                        : "border-muted"
+                    } rounded-full text-black`}
                   />
                   {errors.password && touched.password && (
                     <p className="text-red-500 text-sm mt-1">
@@ -115,17 +138,17 @@ const Signup: React.FC = () => {
                   )}
                 </div>
 
-                {/* Confirm Password Field */}
                 <div>
                   <Field
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
                     placeholder="Confirm Password"
-                    className={inputClassNames(
-                      !!(errors.confirmPassword && touched.confirmPassword)
-                    )}
-                    aria-label="Confirm Password"
+                    className={`w-full px-3 py-2 bg-background/50 border ${
+                      errors.confirmPassword && touched.confirmPassword
+                        ? "border-red-500"
+                        : "border-muted"
+                    } rounded-full text-black`}
                   />
                   {errors.confirmPassword && touched.confirmPassword && (
                     <p className="text-red-500 text-sm mt-1">
@@ -135,7 +158,6 @@ const Signup: React.FC = () => {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div>
                 <button
                   type="submit"
@@ -147,6 +169,7 @@ const Signup: React.FC = () => {
             </Form>
           )}
         </Formik>
+
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <span
@@ -156,6 +179,16 @@ const Signup: React.FC = () => {
             Log in
           </span>
         </p>
+
+        {/* Google Signup Button */}
+        <div className="flex justify-center mt-4">
+          <GoogleLogin
+            onSuccess={handleGoogleSignup}
+            onError={() =>
+              toast.error("Google authentication failed. Try again.")
+            }
+          />
+        </div>
       </div>
     </div>
   );

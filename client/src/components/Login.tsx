@@ -4,14 +4,44 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const localhostURL = import.meta.env.VITE_LIVE_URL;
+  const localhostURL = import.meta.env.VITE_LOCAL_HOST;
 
   const initialValues = {
     email: "",
     password: "",
+  };
+
+  const handleGoogleResponse = async (response) => {
+    try {
+      const token = response.credential;
+      if (!token) {
+        toast.error("Google login failed. Please try again.");
+        return;
+      }
+
+      const res = await axios.post(`${localhostURL}/google-login`, {
+        token,
+      });
+
+      console.log("first", res.data)
+
+      if (res.status === 200) {
+        sessionStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
+        localStorage.setItem("userId", res.data.userData.userId);
+        toast.success("Login successful");
+        navigate("/home");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      toast.error("An error occurred during Google authentication.");
+    }
   };
 
   const validationSchema = Yup.object({
@@ -25,7 +55,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: typeof initialValues) => {
     try {
-      const response = await axios.post(`${localhostURL}/login`, {
+      const response = await axios.post(`${localhostURL}/auth/login`, {
         email: values.email,
         password: values.password,
       });
@@ -42,10 +72,8 @@ const Login: React.FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data?.message || "An error occurred.");
-        console.error("Login error:", error.response?.data?.message);
       } else {
         toast.error("An unexpected error occurred. Please try again.");
-        console.error("Unexpected error:", error);
       }
     }
   };
@@ -61,6 +89,7 @@ const Login: React.FC = () => {
             Shorten your links, expand your reach
           </p>
         </div>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -117,15 +146,25 @@ const Login: React.FC = () => {
             </Form>
           )}
         </Formik>
+
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
-          <a
+          <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => navigate("/signup")}
           >
             Sign up
-          </a>
+          </span>
         </p>
+
+        <div className="flex justify-center mt-4">
+          <GoogleLogin
+            onSuccess={handleGoogleResponse}
+            onError={() =>
+              toast.error("Google authentication failed. Try again.")
+            }
+          />
+        </div>
       </div>
     </div>
   );

@@ -3,9 +3,11 @@ import { IUrl, IUserData } from "./common.interface";
 export interface IUserService {
     registerUserService(userData: IUserData): Promise< any>;
     otpVerification(email: string, otp: string): Promise<any>;
+    googleLogin(token: string): Promise<any>
+    googleRegistration(token: string): Promise<any>
     login(email: string, otp: string): Promise<any>;
     getUrls(userId: string): Promise<any>
-    addUrl(userId: string, longUrl: string): Promise<any>
+    addUrl(userId: string, longUrl: string, alias: string, topic: string): Promise<any>
     redirectUrl(shortUrl: string, userId: string): Promise<any>
     editUrl(userId: string, shortUrl: string, longUrl: string): Promise<any>
     deleteUrl(userId: string, shortUrl: string): Promise<any>

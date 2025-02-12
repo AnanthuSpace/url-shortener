@@ -11,6 +11,10 @@ const UrlSchema = new Schema({
         type: String,
         required: true,
     },
+    topic: {
+        type: String,
+        default: null,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -30,7 +34,6 @@ const UserSchema = new Schema<IUser>({
     },
     password: {
         type: String,
-        required: true,
     },
     urls: [UrlSchema],
 });

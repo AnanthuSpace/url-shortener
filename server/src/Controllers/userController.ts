@@ -31,6 +31,28 @@ export class UserController {
         }
     }
 
+    googleLogin = async (req: Request, res: Response): Promise<any> => {
+        try {
+            const token = req.body.token
+            const response = await this._userService.googleLogin(token)
+            if (response === "NotExisted") return res.status(400).json({ message: "User is not existed please register", response })
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    }
+
+    googleRegistration = async (req: Request, res: Response): Promise<any> => {
+        try {
+            const token = req.body.token
+            const response = await this._userService.googleRegistration(token)
+            if (response == "UserExist") return res.status(400).json({ success: false, message: "User existed please loging" });
+            return res.status(200).json({ success: true, message: "Registration successfully", data: response })
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Internal server error" });
+        }
+    }
+
     otpVerification = async (req: Request, res: Response) => {
         try {
             const { otp, email } = req.body
@@ -78,9 +100,10 @@ export class UserController {
 
     addUrl = async (req: CustomRequest, res: Response) => {
         try {
+            console.log("constroller")
             const userId = req.id as string
-            const { url } = req.body
-            const serviceResponse = await this._userService.addUrl(userId, url)
+            const { url, alias, topic } = req.body
+            const serviceResponse = await this._userService.addUrl(userId, url, alias, topic)
             res.status(HTTP_statusCode.OK).json({ data: serviceResponse, message: "URL deleted successfully" })
         } catch (error) {
             res.status(HTTP_statusCode.InternalServerError).json({ message: 'Internal server error' });

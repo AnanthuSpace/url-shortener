@@ -23,6 +23,19 @@ export class UserRepository implements IUserRepository {
         }
     };
 
+    registerThroghGoogle = async (userId: string, email: string): Promise<any> =>{
+        try {
+
+            const createdUser = await this._userModel.create({
+                userId,
+                email,
+            })
+            return createdUser;
+        } catch (error: any) {
+            throw new Error(`Error while registering user: ${error.message}`);
+        }
+    }
+
     getUrls = async (userId: string): Promise<any> => {
         try {
             const res = await this._userModel.aggregate([
@@ -43,9 +56,31 @@ export class UserRepository implements IUserRepository {
         }
     }
 
-    addUrl = async (userId: string, longUrl: string): Promise<any> => {
+    checkAlias = async (userId: string, alias: string): Promise<boolean> => {
         try {
-            const shortUrl = shortid.generate();
+            const user = await this._userModel.findOne(
+                { userId, "urls.shortUrl": alias },
+                { "urls.$": 1 }
+            );
+
+            return !!user;
+        } catch (error) {
+            console.error("Error checking alias:", error);
+            throw new Error("An error occurred while checking the alias.");
+        }
+    };
+
+
+    addUrl = async (userId: string, longUrl: string, alias: string, topic: string): Promise<any> => {
+        try {
+
+            let shortUrl = ""
+
+            if (alias) {
+                shortUrl = alias
+            } else {
+                shortUrl = shortid.generate();
+            }
             const user = await this._userModel.findOne({ userId });
 
             if (!user) {
@@ -56,6 +91,7 @@ export class UserRepository implements IUserRepository {
                 shortUrl,
                 longUrl,
                 clicks: 0,
+                topic,
                 createdAt: new Date(),
             };
 
